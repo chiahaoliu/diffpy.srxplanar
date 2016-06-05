@@ -15,6 +15,7 @@
 
 import numpy as np
 from diffpy.confutils.config import ConfigBase
+from diffpy.confutils.tools import _configPropertyRad
 
 _description = \
 '''

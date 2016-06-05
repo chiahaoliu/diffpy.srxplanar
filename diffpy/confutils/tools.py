@@ -96,7 +96,7 @@ def StrConv(opttype):
     else:
         conv = None
     return conv
-
+    
 def str2Opt(opttype, optvalue):
     '''
     convert the string to value of one option, according to the option type
