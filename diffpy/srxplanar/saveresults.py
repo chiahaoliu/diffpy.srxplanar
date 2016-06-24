@@ -66,6 +66,9 @@ class SaveResults(object):
                 rv = [rv, self.saveGSAS(rv['chi'], rv['filename'])]
         return rv
 
+    def _str2byte(self, input_str):
+        return str.encode(input_str)
+
     def saveChi(self, xrd, filename):
         '''
         save diffraction intensity in .chi
@@ -75,8 +78,11 @@ class SaveResults(object):
         '''
         filepath = self.getFilePathWithoutExt(filename) + '.chi'
         f = open(filepath, 'wb')
-        f.write(self.config.getHeader(mode='short'))
-        f.write('#### start data\n')
+        header = self._str2byte(self.config.getHeader(mode='short'))
+        # for byte operation later
+        f.write(header)
+        header_tail = self._str2byte('#### start data\n')
+        f.write(header_tail)
         np.savetxt(f, xrd.transpose(), fmt='%g')
         f.close()
         return filepath

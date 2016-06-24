@@ -128,6 +128,17 @@ class FakeConfigFile(object):
         self.name = configfile
         return
 
+    def __iter__( self ):
+        return self
+
+    def __next__(self):
+        line = self.fp.readline()
+        if line.startswith(self.endline) or line == "":
+            self.fp.close()
+            raise StopIteration()
+        else:
+            return line
+
     def readline(self):
         '''
         readline function

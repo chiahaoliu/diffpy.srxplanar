@@ -124,7 +124,7 @@ class SrXplanar(object):
             rv = self.config.output
         elif filename != None:
             rv = filename
-        elif imagename != None and isinstance(imagename, (str, unicode)):
+        elif imagename != None and isinstance(imagename, (str)):
             rv = imagename
         return rv
 
@@ -150,7 +150,8 @@ class SrXplanar(object):
             for imagefile in image:
                 rv += self._getPic(imagefile)
             rv /= len(image)
-        elif isinstance(image, (str, unicode)):
+        #elif isinstance(image, (str, unicode)):
+        elif isinstance(image, str):
             rv = self.loadimage.loadImage(image)
             if correction == None or correction == True:
                 ce = self.config.cropedges
