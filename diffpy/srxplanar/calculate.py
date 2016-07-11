@@ -13,6 +13,7 @@
 #
 ##############################################################################
 
+import os
 import numpy as np
 import scipy.sparse as ssp
 import scipy.ndimage.filters as snf
@@ -110,9 +111,12 @@ class Calculate(object):
         
         # extra crop
         maskedmatrix = self.getMaskedmatrixPic()
-        # self.bin_number = np.array(np.histogram(maskedmatrix, self.bin_edges)[0], dtype=float)
-        # self.bin_number[self.bin_number <= 0] = 1
-        return  # self.bin_number
+        self.bin_number = np.array(np.histogram(maskedmatrix, self.bin_edges)[0], dtype=float)
+        self.bin_number[self.bin_number <= 0] = 1
+        print('bin_num = {}'.format(self.bin_number))
+        print('shape of bin_num = {}'.format(np.shape(self.bin_number)))
+        np.savetxt(os.path.join(os.getcwd(),'bin_num.txt'), self.bin_number)
+        return self.bin_number
 
     def intensity(self, pic):
         '''
@@ -195,16 +199,26 @@ class Calculate(object):
         :return: 2d array, variance of each pixel
         '''
         maskedmatrix, pic = self.getMaskedmatrixPic(pic)
-        
+        #print('masked_matrix = {}'.format(maskedmatrix))
+        #print('pic = {}'.format(pic))
         picavg = snf.uniform_filter(pic, 5, mode='wrap')
+        #print('pic avg = {}'.format(picavg))
         pics2 = (pic - picavg) ** 2
         pvar = snf.uniform_filter(pics2, 5, mode='wrap')
-
+        #print('pvar = {}'.format(pvar))
         gain = pvar / pic
-        inds = np.nonzero(np.logical_and(np.isnan(gain), np.isinf(gain)))
+        #print(np.isnan(gain))
+        #print('gain = {}'.format(gain))
+        #print('shape of gain = {}'.format(np.shape(gain)))
+        inds = np.nonzero(np.logical_or(np.isnan(gain), np.isinf(gain)))
+        #print('inds = {}'.format(inds))
         gain[inds] = 0
-        gainmedian = np.median(gain, overwrite_input=True)
+        #print(np.any(np.isnan(gain)))
+        gainmedian = np.median(gain, keepdims=True, overwrite_input=True)
+        #print('gainmedian = {}'.format(gainmedian))
         var = pic * gainmedian
+        #print('var = {}'.format(var))
+        #print('shape of var = {}'.format(np.shape(var)))
         return var
 
     def genDistanceMatrix(self):

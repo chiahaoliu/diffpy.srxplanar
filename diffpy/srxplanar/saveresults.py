@@ -33,7 +33,7 @@ class SaveResults(object):
 
     def prepareCalculation(self):
         if not os.path.exists(self.savedirectory):
-                os.makedirs(self.savedirectory)
+                os.makedirs(self.savedirectory, exist_ok=True)
         return
 
     def getFilePathWithoutExt(self, filename):
