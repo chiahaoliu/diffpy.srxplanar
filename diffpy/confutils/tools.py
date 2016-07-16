@@ -18,6 +18,7 @@ import re
 import time
 import zlib
 import hashlib
+from configparser import ConfigParser
 
 def _configPropertyRad(nm):
     '''
@@ -220,3 +221,23 @@ def checkFileVal(filename):
             time.sleep(0.5)
             lastcrc = checkCRC32(filename)
     return
+
+def _parse_calibration_file(config_file_name):
+    ''' helper function to parse calibration file '''
+    calibration_parser = ConfigParser()
+    calibration_parser.read(config_file_name)
+    sections = calibration_parser.sections()
+    config_dict = {}
+    for section in sections:
+        config_dict[section] = {} # write down header
+        options = calibration_parser.options(section)
+        for option in options:
+            try:
+                config_dict[section][option] = calibration_parser.get(section,
+                                                                      option)
+                # if config_dict[option] == -1:
+                # DebugPrint("skip: %s" % option)
+            except:
+                print("exception on %s!" % option)
+                config_dict[option] = None
+    return config_dict
