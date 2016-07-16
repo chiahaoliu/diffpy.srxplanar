@@ -113,10 +113,10 @@ class Calculate(object):
         maskedmatrix = self.getMaskedmatrixPic()
         self.bin_number = np.array(np.histogram(maskedmatrix, self.bin_edges)[0], dtype=float)
         self.bin_number[self.bin_number <= 0] = 1
-        print('bin_num = {}'.format(self.bin_number))
-        print('shape of bin_num = {}'.format(np.shape(self.bin_number)))
-        np.savetxt(os.path.join(os.getcwd(),'bin_num.txt'), self.bin_number)
-        return self.bin_number
+        #print('bin_num = {}'.format(self.bin_number))
+        #print('shape of bin_num = {}'.format(np.shape(self.bin_number)))
+        #np.savetxt(os.path.join(os.getcwd(),'bin_num.txt'), self.bin_number)
+        #return self.bin_number
 
     def intensity(self, pic):
         '''
