@@ -23,14 +23,17 @@ from tifffile import imsave as saveImage
 
 try:
     import fabio
+
     def openImage(im):
         rv = fabio.openimage.openimage(im)
         return rv.data
 except:
     import tifffile
+
     def openImage(im):
         rv = tifffile.imread(im)
         return rv
+
 
 class LoadImage(object):
     '''
@@ -53,9 +56,9 @@ class LoadImage(object):
     def flipImage(self, pic):
         '''
         flip image if configured in config
-        
+
         :param pic: 2d array, image array
-        
+
         :return: 2d array, flipped image array
         '''
         if self.fliphorizontal:
@@ -68,9 +71,9 @@ class LoadImage(object):
         '''
         load image file, if failed (for example loading an incomplete file),
         then it will keep trying loading file for 5s
-        
+
         :param filename: str, image file name
-        
+
         :return: 2d ndarray, 2d image array (flipped)
         '''
         if os.path.exists(filename):
@@ -82,7 +85,10 @@ class LoadImage(object):
             i = 0
             while i < 10:
                 try:
-                    image = openImage(filenamefull)
+                    if os.path.splitext(filenamefull)[-1] == '.npy':
+                        image = np.load(filenamefull)
+                    else:
+                        image = openImage(filenamefull)
                     i = 10
                 except:
                     i = i + 1
@@ -94,7 +100,7 @@ class LoadImage(object):
     def genFileList(self, filenames=None, opendir=None, includepattern=None, excludepattern=None, fullpath=False):
         '''
         generate the list of file in opendir according to include/exclude pattern
-        
+
         :param filenames: list of str, list of file name patterns, all files match ANY pattern in this list will be included
         :param opendir: str, the directory to get files
         :param includepattern: list of str, list of wildcard of files that will be loaded, 
@@ -102,17 +108,18 @@ class LoadImage(object):
         :param excludepattern: list of str, list of wildcard of files that will be blocked,
             any files match ANY patterns in this list will be blocked
         :param fullpath: bool, if true, return the full path of each file
-        
+
         :return: list of str, a list of filenames
         '''
-        
-        fileset = self.genFileSet(filenames, opendir, includepattern, excludepattern, fullpath)
+
+        fileset = self.genFileSet(
+            filenames, opendir, includepattern, excludepattern, fullpath)
         return sorted(list(fileset))
 
     def genFileSet(self, filenames=None, opendir=None, includepattern=None, excludepattern=None, fullpath=False):
         '''
         generate the list of file in opendir according to include/exclude pattern
-        
+
         :param filenames: list of str, list of file name patterns, all files match ANY pattern in this list will be included
         :param opendir: str, the directory to get files
         :param includepattern: list of str, list of wildcard of files that will be loaded, 
@@ -120,7 +127,7 @@ class LoadImage(object):
         :param excludepattern: list of str, list of wildcard of files that will be blocked,
             any files match ANY patterns in this list will be blocked
         :param fullpath: bool, if true, return the full path of each file
-        
+
         :return: set of str, a list of filenames
         '''
         filenames = self.filenames if filenames == None else filenames
@@ -141,6 +148,7 @@ class LoadImage(object):
                 fileset1 |= set(fnmatch.filter(fileset, filename))
             fileset = fileset1
         if fullpath:
-            filelist = map(lambda x: os.path.abspath(os.path.join(opendir, x)), fileset)
+            filelist = map(
+                lambda x: os.path.abspath(os.path.join(opendir, x)), fileset)
             fileset = set(filelist)
         return fileset
