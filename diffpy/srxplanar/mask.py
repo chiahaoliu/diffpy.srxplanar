@@ -47,7 +47,8 @@ class Mask(object):
     xdimension = _configPropertyR('xdimension')
     ydimension = _configPropertyR('ydimension')
     fliphorizontal = _configPropertyR('fliphorizontal')
-    flipvertical = _configPropertyR('flipvertical')
+    #flipvertical = _configPropertyR('flipvertical')
+    flipvertical = True
     wavelength = _configPropertyR('wavelength')
     maskfile = _configPropertyR('maskfile')
     brightpixelmask = _configPropertyR('brightpixelmask')
@@ -64,12 +65,15 @@ class Mask(object):
 
     def staticMask(self, maskfile=None):
         '''
-        create a static mask according existing mask file. This mask remain unchanged for different images
-        
-        :param maskfile: string, file name of mask, 
-            mask file supported: .npy, .tif file, ATTN: mask in .npy form should be already flipped, 
-            and 1 (or larger) stands for masked pixels, 0(<0) stands for unmasked pixels
-        
+        create a static mask according existing mask file.
+        This mask remain unchanged for different images
+
+        :param maskfile: string, file name of mask,
+            mask file supported: .npy, .tif file,
+            ATTN: mask in .npy form should be already flipped
+                  1 (or larger) stands for masked pixels,
+                  0(<0) stands for unmasked pixels
+
         :return: 2d array of boolean, 1 stands for masked pixel
         '''
         maskfile = self.maskfile if maskfile == None else maskfile
@@ -77,6 +81,8 @@ class Mask(object):
         if os.path.exists(maskfile):
             if maskfile.endswith('.npy'):
                 rv = np.load(maskfile)
+                # flip as gui render plot logic is different from np
+                rv = np.flipud(rv)
             elif maskfile.endswith('.tif'):
                 immask = openImage(maskfile)
                 rv = self.flipImage(immask)

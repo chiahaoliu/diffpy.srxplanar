@@ -67,6 +67,7 @@ class LoadImage(object):
             pic = np.array(pic[::-1, :])
         return pic
 
+
     def loadImage(self, filename):
         '''
         load image file, if failed (for example loading an incomplete file),
@@ -93,7 +94,9 @@ class LoadImage(object):
                 except:
                     i = i + 1
                     time.sleep(0.5)
-            image = self.flipImage(image)
+            #image = self.flipImage(image)
+            # default flip as gui plot rendering is different from np
+            image = np.flipud(image)
             image[image < 0] = 0
         return image
 
